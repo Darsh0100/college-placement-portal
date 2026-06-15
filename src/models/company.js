@@ -31,6 +31,11 @@ const CompanySchema=new mongoose.Schema({
       foundedYear: {
         type: Number,
       },
+      activeJobs: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Job",
+        },]
       
 })
 
