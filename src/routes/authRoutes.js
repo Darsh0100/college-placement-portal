@@ -36,4 +36,24 @@ router.get("/admin",auth,isAdmin,(req,res)=>{
 
 
 
+//protected routes
+router.get("/student",auth,isStudent,(req,res)=>{
+  res.status(200).json({
+      success:true,
+      message:"access to students",
+  })
+})
+router.get("/admin",auth,isAdmin,(req,res)=>{
+  res.status(200).json({
+      success:true,
+      message:"access to Admin",
+  })
+})
+router.get("/admin",auth,isRecruiter,(req,res)=>{
+  res.status(200).json({
+      success:true,
+      message:"access to recruiter",
+  })
+})
+
 module.exports = router;
