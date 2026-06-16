@@ -41,24 +41,22 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = {
-  registerUser,
-};
+
 
 //login Controller
 
-const bcrypt=require("bcrypt");
+
 const jwt=require("jsonwebtoken");
 require("dotenv").config();
 
 const loginUser=async(req,res)=>{
     try{
         const{email,password}=req.body;
-        const checkUser=await User.findOne({email});
+        let checkUser=await User.findOne({email});
         if(!checkUser){
-            res.status(401).json({
+            return res.status(401).json({
                 success:false,
-                message:"User not registered";
+                message:"User not registered",
             })
         }
         const isMatch=await bcrypt.compare(password,checkUser.password);
@@ -80,7 +78,6 @@ const loginUser=async(req,res)=>{
             },
         );
         checkUser=checkUser.toObject();
-        checkUser.token=token;
         checkUser.password=undefined;
         const options={
             expires:new Date(Date.now()+3*24*60*60*1000),
@@ -102,6 +99,6 @@ const loginUser=async(req,res)=>{
 }
 
 module.exports = {
-  loginUser,
+  registerUser, loginUser,
 };
 
