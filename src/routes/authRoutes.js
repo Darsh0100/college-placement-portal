@@ -36,7 +36,7 @@ router.get("/admin",auth,isAdmin,(req,res)=>{
 
 
 // Route to handle the submission of the extended company details form
-router.post("/recruiter/company-details", auth, isRecruiter, async (req, res) => {
+router.post("/recruiter/company-details", auth, isRecruiter,saveCompanyDetails, async (req, res) => {
   try {
       res.status(200).json({
       success: true,
