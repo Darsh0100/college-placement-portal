@@ -33,13 +33,7 @@ const jobSchema = new mongoose.Schema(
 
     jobType: {
       type: String,
-      enum: [
-        "Internship",
-        "Full-Time",
-        "Part-Time",
-        "Remote",
-        "Contract",
-      ],
+      enum: ["Internship", "Full-Time", "Part-Time", "Remote", "Contract"],
       required: true,
     },
 
@@ -85,6 +79,10 @@ const jobSchema = new mongoose.Schema(
     applicantsCount: {
       type: Number,
       default: 0,
+    },
+    location: {
+      type: String,
+      required: true,
     },
   },
   {
