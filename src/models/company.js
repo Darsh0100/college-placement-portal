@@ -1,10 +1,17 @@
 const mongoose=require("mongoose");
 
 const CompanySchema=new mongoose.Schema({
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true, // Prevents 1 user from creating multiple companies
+  },
     CompanyName:{
         type:String,
         required:true,
         trim:true,
+        unique: true,
     },
     CompanyEmail:{
         type: String,
@@ -15,7 +22,7 @@ const CompanySchema=new mongoose.Schema({
     companyWebsite: {
         type: String,
         default: "",
-        require:true,
+        required:true,
       },
       companyLogo: {
         type: String, // Cloudinary URL
@@ -39,6 +46,6 @@ const CompanySchema=new mongoose.Schema({
           ref: "Job",
         },]
       
-})
+},{ timestamps: true });
 
 module.exports = mongoose.model("Company", CompanySchema);

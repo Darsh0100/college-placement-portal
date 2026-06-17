@@ -43,7 +43,7 @@ const jobSchema = new mongoose.Schema(
       required: true,
     },
 
-    salary: {
+    package: {
       type: Number,
       required: true,
     },
