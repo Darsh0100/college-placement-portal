@@ -5,7 +5,7 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 
 app.use(express.json());
-const cookieParser = require('cookie-parser');
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
@@ -13,5 +13,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+app.use(cookieParser());
 
 module.exports = app;
