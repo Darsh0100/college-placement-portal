@@ -15,6 +15,7 @@ const CompanySchema=new mongoose.Schema({
     companyWebsite: {
         type: String,
         default: "",
+        require:true,
       },
       companyLogo: {
         type: String, // Cloudinary URL
@@ -27,6 +28,7 @@ const CompanySchema=new mongoose.Schema({
       description: {
         type: String,
         maxlength: 1000,
+        required:true,
       },
       foundedYear: {
         type: Number,
