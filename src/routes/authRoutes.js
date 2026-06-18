@@ -16,12 +16,6 @@ const { saveCompanyDetails } = require("../controllers/recruiterController");
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-router.get("/register", (req, res) => {
-  res.send("Register GET Route Working");
-});
-
-// protected routes
-
 router.get("/student", auth, isStudent, (req, res) => {
   res.status(200).json({
     success: true,
