@@ -20,6 +20,7 @@ const applicationSchema = new mongoose.Schema(
     resumeUrl: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: String,
