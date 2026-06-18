@@ -10,7 +10,7 @@ const {
   deleteJob,
   getRecruiterJobs,
 } = require("../controllers/jobController");
-
+const { auth, isRecruiter } = require("../middleware/authMiddleware");
 router.post("/create", auth, isRecruiter, createJob);
 
 router.get("/", getAllJobs);
