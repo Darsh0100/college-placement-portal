@@ -9,7 +9,7 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.send("Backend Running");
 });
-app.use("/api/auth", authRoutes);
-app.use("/api/jobs", jobRoutes);
-app.use("/api/applications", applicationRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/jobs", jobRoutes);
+app.use("/api/v1/applications", applicationRoutes);
 module.exports = app;

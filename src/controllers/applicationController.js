@@ -1,74 +1,68 @@
 const Application = require("../models/application");
 const Job = require("../models/job");
+const cloudinary=require("../config/cloudinary")
 
 const applyToJob = async (req, res) => {
   try {
-    const studentId = req.user.id;
-    const { jobId, resumeUrl } = req.body;
+    console.log("Controller Hit");
 
-    if (!jobId || !resumeUrl) {
+    // 1. Get Student ID from the URL Parameter
+    const { Id: studentId } = req.params; 
+
+    // 2. Get the Job ID from the form-data text field sent by the frontend/Postman
+    const { jobId } = req.body; 
+    console.log(jobId);
+    if (!jobId) {
       return res.status(400).json({
         success: false,
-        message: "jobId and resumeUrl are required",
+        message: "jobId is required in the request body",
       });
     }
 
-    const job = await Job.findById(jobId);
+    if (!req.file) {
+      return res.status(400).json({
+          success: false,
+          message: "Resume is required"
+      });
+    }
 
+    // 3. Upload to Cloudinary
+    const uploadedResume = await cloudinary.uploader.upload(
+        req.file.path,
+        {
+            resource_type: "raw",
+            folder: "placement_resumes"
+        }
+    );
+
+    // 4. Find the job using the ID from the body
+    const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({
         success: false,
         message: "Job not found",
       });
     }
-    if (job.status !== "Open") {
-      return res.status(400).json({
-        success: false,
-        message: "This job is no longer accepting applications",
-      });
-    }
-    if (new Date() > job.applicationDeadline) {
-      return res.status(400).json({
-        success: false,
-        message: "Application deadline has passed",
-      });
-    }
 
-    const existingApplication = await Application.findOne({
-      student: studentId,
-      job: jobId,
-    });
-
-    if (existingApplication) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already applied for this job",
-      });
-    }
-
+    // 5. Create the application matching the student and job together
     const application = await Application.create({
       student: studentId,
       job: job._id,
       company: job.company,
-      resumeUrl,
+      resumeUrl: uploadedResume.secure_url,
     });
 
-    job.applicantsCount += 1;
-    await job.save();
+    // 6. Increment applicant count
+//  Increment the counter directly in the database without triggering full validation
+    await Job.findByIdAndUpdate(job._id, { $inc: { applicantsCount: 1 } });
 
     return res.status(201).json({
       success: true,
       message: "Application submitted successfully",
       application,
     });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already applied for this job",
-      });
-    }
 
+  } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,

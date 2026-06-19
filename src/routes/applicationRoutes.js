@@ -23,4 +23,17 @@ router.put(
   isRecruiter,
   updateApplicationStatus
 );
+
+const upload = require("../middleware/multer");
+router.post(
+    "/apply/:Id",auth,
+    upload.single("resume"),
+    applyToJob
+);
+
+
+
+
+
+
 module.exports = router;
