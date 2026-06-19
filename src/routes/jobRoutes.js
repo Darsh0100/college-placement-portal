@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { auth, isRecruiter } = require("../middleware/authMiddleware");
+const { auth, isRecruiter} = require("../middleware/authMiddleware");
 
 const {
   createJob,
