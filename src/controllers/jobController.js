@@ -1,11 +1,9 @@
 const Job = require("../models/job");
-const User = require("../models/User");
-
+const Company = require("../models/company");
 const createJob = async (req, res) => {
   try {
     const {
       title,
-      company,
       description,
       skills,
       jobType,
@@ -15,24 +13,27 @@ const createJob = async (req, res) => {
       applicationDeadline,
       location,
     } = req.body;
-    if (
-      !title ||
-      !company ||
-      !description ||
-      !jobType ||
-      !salary ||
-      !applicationDeadline
-    ) {
+    if (!title || !description || !jobType || !salary || !applicationDeadline) {
       return res.status(400).json({
         success: false,
         message: "All required fields are mandatory",
       });
     }
     const recruiterId = req.user.id;
+    const recruiterCompany = await Company.findOne({
+      userId: recruiterId,
+    });
+
+    if (!recruiterCompany) {
+      return res.status(404).json({
+        success: false,
+        message: "Please create company profile first",
+      });
+    }
 
     const job = await Job.create({
       title,
-      company,
+      company: recruiterCompany._id,
       recruiter: recruiterId,
       description,
       skills,
@@ -59,7 +60,10 @@ const createJob = async (req, res) => {
 
 const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find().sort({ createdAt: -1 });
+    const jobs = await Job.find()
+      .populate("company")
+      .populate("recruiter", "name email")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -75,7 +79,9 @@ const getAllJobs = async (req, res) => {
 };
 const getJobById = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id);
+    const job = await Job.findById(req.params.id)
+      .populate("company")
+      .populate("recruiter", "name email");
 
     if (!job) {
       return res.status(404).json({
@@ -99,7 +105,8 @@ const getJobById = async (req, res) => {
 const updateJob = async (req, res) => {
   try {
     const jobId = req.params.id;
-
+    delete req.body.company;
+    delete req.body.recruiter;
     const job = await Job.findById(jobId);
 
     if (!job) {
@@ -174,7 +181,10 @@ const getRecruiterJobs = async (req, res) => {
 
     const jobs = await Job.find({
       recruiter: recruiterId,
-    }).sort({ createdAt: -1 });
+    })
+      .populate("company")
+      .populate("recruiter", "name email")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,

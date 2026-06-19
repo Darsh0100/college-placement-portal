@@ -16,7 +16,6 @@ exports.auth = (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = decoded;
 
     next();
@@ -30,20 +29,13 @@ exports.auth = (req, res, next) => {
 
 exports.isStudent = (req, res, next) => {
   try {
-    try {
-      if (req.user.role != "student") {
-        return res.status(401).json({
-          success: false,
-          message: "this is protected route for student",
-        });
-      }
-      next();
-    } catch (err) {
-      return res.status(500).json({
+    if (req.user.role != "student") {
+      return res.status(401).json({
         success: false,
-        message: err.message,
+        message: "this is protected route for student",
       });
     }
+    next();
   } catch (err) {
     return res.status(500).json({
       success: false,
@@ -68,6 +60,7 @@ exports.isRecruiter = (req, res, next) => {
     });
   }
 };
+
 exports.isAdmin = (req, res, next) => {
   try {
     if (req.user.role != "admin") {
