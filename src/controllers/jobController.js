@@ -20,9 +20,8 @@ const createJob = async (req, res) => {
       });
     }
     const recruiterId = req.user.id;
-    const recruiterCompany = await Company.findOne({
-      userId: recruiterId,
-    });
+    const recruiterCompany = await Company.findOne({ userId: recruiterId })
+      .populate("userId"); // 🌟 Chained outside the findOne object, passed as a string
 
     if (!recruiterCompany) {
       return res.status(404).json({

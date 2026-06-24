@@ -2,7 +2,7 @@ const express = require("express");
 
 const router = express.Router();
 
-const { registerUser, loginUser } = require("../controllers/authController");
+const { registerUser, loginUser,registerRecruiter } = require("../controllers/authController");
 
 const {
   auth,
@@ -14,6 +14,7 @@ const {
 const { saveCompanyDetails } = require("../controllers/recruiterController");
 
 router.post("/register", registerUser);
+router.post("/register/recruiter", registerRecruiter);
 router.post("/login", loginUser);
 
 router.get("/student", auth, isStudent, (req, res) => {

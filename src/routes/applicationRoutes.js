@@ -1,5 +1,6 @@
 const express = require("express");
 
+
 const router = express.Router();
 const {
   auth,
@@ -13,7 +14,6 @@ const {
   getApplicantsForJob,
 } = require("../controllers/applicationController");
 
-router.post("/apply", auth, isStudent, applyToJob);
 router.get("/my-applications", auth, isStudent, getMyApplications);
 router.get("/job/:jobId", auth, isRecruiter, getApplicantsForJob);
 
@@ -26,9 +26,11 @@ router.put(
 
 const upload = require("../middleware/multer");
 router.post(
-    "/apply/:Id",auth,
-    upload.single("resume"),
-    applyToJob
+  "/apply",
+  auth,
+  isStudent,
+  upload.single("resume"),
+  applyToJob
 );
 
 

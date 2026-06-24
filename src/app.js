@@ -4,6 +4,12 @@ const jobRoutes = require("./routes/jobRoutes");
 const authRoutes = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const app = express();
+const cors = require("cors");
+
+app.use(cors({
+  origin: "http://localhost:5173", // Replace with your frontend's exact URL
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.get("/", (req, res) => {

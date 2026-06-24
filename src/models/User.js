@@ -34,20 +34,17 @@ const userSchema = new mongoose.Schema(
 
     branch: {
       type: String,
-      required: true,
       trim: true,
     },
 
     cgpa: {
       type: Number,
-      required: true,
       min: 0,
       max: 10,
     },
 
     resumeUrl: {
       type: String,
-      required: true,
     },
   },
   {
