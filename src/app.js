@@ -5,11 +5,13 @@ const authRoutes = require("./routes/authRoutes");
 const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require("cors");
-
-app.use(cors({
-  origin: "http://localhost:5173", // Replace with your frontend's exact URL
-  credentials: true
-}));
+const chatRoutes = require("./routes/chatRoutes");
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.get("/", (req, res) => {
@@ -18,4 +20,5 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/applications", applicationRoutes);
+app.use("/api/v1/chat", chatRoutes);
 module.exports = app;
