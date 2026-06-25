@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   Briefcase, FileText, User, Search, MapPin, Clock,
   IndianRupee, Upload, Check, LogOut, 
-  Calendar, BookOpen, X, AlertCircle
+  Calendar, BookOpen, X, AlertCircle, ShieldAlert
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import target from "../assets/target.png";
@@ -27,11 +27,17 @@ function InputWithIcon({ icon: Icon, ...props }) {
   );
 }
 
-// ─── Job Card ───────────────────────────────────────────────────────────────
-function JobCard({ job, applied, onApply, onView }) {
+// ─── Job Card (UPDATED WITH ELIGIBILITY CHECKS) ──────────────────────────────
+function JobCard({ job, applied, userBranch, onApply, onView }) {
   const displayCompanyName = typeof job.company === 'object' && job.company !== null
     ? (job.company?.CompanyName || job.company?.name)
     : (typeof job.company === 'string' ? job.company : "Unknown Company");
+
+  // Logic Check: Evaluate if allowedBranches is defined and check for student eligibility
+  const allowedBranches = job.eligibility?.allowedBranches;
+  const isBranchEligible = Array.isArray(allowedBranches) && allowedBranches.length > 0
+    ? allowedBranches.includes(userBranch)
+    : true; // Default to true if recruiter didn't lock down any specific branches
 
   return (
     <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:shadow-md">
@@ -53,6 +59,18 @@ function JobCard({ job, applied, onApply, onView }) {
         <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />Apply by {job.applicationDeadline || job.deadline}</span>
       </div>
 
+      {/* Render eligible target tracks badges */}
+      {allowedBranches && allowedBranches.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1 items-center">
+          <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mr-1">Eligibility:</span>
+          {allowedBranches.map((b) => (
+            <span key={b} className={`px-1.5 py-0.5 rounded text-[11px] font-bold ${b === userBranch ? "bg-blue-900 text-white" : "bg-slate-100 text-slate-600"}`}>
+              {b}
+            </span>
+          ))}
+        </div>
+      )}
+
       <div className="mt-3 flex flex-wrap gap-1.5">
         {job.skills?.map((s) => (
           <span key={s} className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">{s}</span>
@@ -70,6 +88,10 @@ function JobCard({ job, applied, onApply, onView }) {
         {applied ? (
           <div className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-green-200 bg-green-50 py-2.5 text-sm font-semibold text-green-700">
             <Check className="h-4 w-4" /> Applied
+          </div>
+        ) : !isBranchEligible ? (
+          <div className="flex flex-1 items-center justify-center gap-1 rounded-xl border border-red-200 bg-red-50 py-2.5 text-xs font-bold text-red-700 cursor-not-allowed">
+            <ShieldAlert className="h-3.5 w-3.5" /> Ineligible Branch
           </div>
         ) : (
           <button
@@ -164,12 +186,7 @@ function ApplyModal({ job, onClose, onConfirm, showToast, loading }) {
             >
               {loading ? (
                 <>
-                  <svg
-                    className="h-4 w-4 animate-spin"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
                     <path fill="currentColor" className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -186,8 +203,8 @@ function ApplyModal({ job, onClose, onConfirm, showToast, loading }) {
   );
 }
 
-// ─── Job Detail Modal ─────────────────────────────────────────────────────────
-function JobDetailModal({ job, applied, onClose, onApply }) {
+// ─── Job Detail Modal (UPDATED WITH ELIGIBILITY CHECKS) ──────────────────────
+function JobDetailModal({ job, applied, userBranch, onClose, onApply }) {
   const hasCompanyObj = typeof job.company === 'object' && job.company !== null;
   
   const displayCompanyName = hasCompanyObj
@@ -209,6 +226,12 @@ function JobDetailModal({ job, applied, onClose, onApply }) {
       displayDeadline = String(rawDeadline);
     }
   }
+
+  // Check branch condition for detail view layout block
+  const allowedBranches = job.eligibility?.allowedBranches;
+  const isBranchEligible = Array.isArray(allowedBranches) && allowedBranches.length > 0
+    ? allowedBranches.includes(userBranch)
+    : true;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-blue-950/40 p-4 backdrop-blur-sm">
@@ -248,6 +271,22 @@ function JobDetailModal({ job, applied, onClose, onApply }) {
               <p className="font-mono font-medium text-slate-500 truncate">{typeof recruiterId === 'object' ? (recruiterId?.name || "Assigned") : String(recruiterId)}</p>
             </div>
           </div>
+
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Allowed Target Branches</p>
+            <div className="flex flex-wrap gap-1.5">
+              {allowedBranches && allowedBranches.length > 0 ? (
+                allowedBranches.map((b) => (
+                  <span key={b} className={`rounded-lg px-2.5 py-1 text-xs font-bold border ${b === userBranch ? "bg-blue-950 text-white border-blue-900" : "bg-slate-50 text-slate-600 border-slate-200"}`}>
+                    {b} {b === userBranch && " (Your Branch)"}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-slate-500">Open to all campus academic branches.</span>
+              )}
+            </div>
+          </div>
+
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Required Focus Skills</p>
             <div className="flex flex-wrap gap-1.5">
@@ -265,6 +304,10 @@ function JobDetailModal({ job, applied, onClose, onApply }) {
               <div className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-green-200 bg-green-50 py-3 text-sm font-semibold text-green-700">
                 <Check className="h-4 w-4" /> Already Applied to this Drive
               </div>
+            ) : !isBranchEligible ? (
+              <div className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-red-200 bg-red-50 py-3 text-sm font-bold text-red-700 cursor-not-allowed">
+                <ShieldAlert className="h-4 w-4" /> Your Branch is Ineligible for this Drive
+              </div>
             ) : (
               <button type="button" onClick={() => { onClose(); onApply(job); }} className="w-full rounded-xl bg-blue-900 py-3 text-sm font-semibold text-white shadow-md hover:bg-blue-800 transition">Apply Now</button>
             )}
@@ -281,6 +324,9 @@ export default function StudentDashboard() {
   const user = JSON.parse(localStorage.getItem("user"));
   const userName = user?.name || "Student";
   const userEmail = user?.email || "";
+  
+  // Extract user branch out of configuration profile safely
+  const userBranch = user?.branch || ""; 
 
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
@@ -298,7 +344,6 @@ export default function StudentDashboard() {
     setToast({ message, type });
   };
 
-  // Auto hide toast after 3 seconds
   useEffect(() => {
     if (toast) {
       const timer = setTimeout(() => setToast(null), 3000);
@@ -360,9 +405,15 @@ export default function StudentDashboard() {
         showToast("Please upload your resume PDF to submit.", "error");
         return;
       }
+
+      // Final Check: Extra front-end runtime security verification
+      const allowedBranches = applyJob?.eligibility?.allowedBranches;
+      if (Array.isArray(allowedBranches) && allowedBranches.length > 0 && !allowedBranches.includes(userBranch)) {
+        showToast("Application blocked: Branch mismatch parameters detected.", "error");
+        return;
+      }
   
       const token = localStorage.getItem("token");
-  
       if (!token) {
         showToast("Please login first", "error");
         return;
@@ -380,9 +431,7 @@ export default function StudentDashboard() {
         "http://localhost:8000/api/v1/applications/apply",
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           body: formData,
         }
       );
@@ -431,7 +480,7 @@ export default function StudentDashboard() {
           <div className="flex items-center gap-4">
             <div className="hidden text-right sm:block">
               <p className="text-sm font-semibold text-slate-900">{userName}</p>
-              <p className="text-xs text-slate-400">Student</p>
+              <p className="text-xs text-slate-400">Student Branch: <strong className="text-blue-900">{userBranch || "Unspecified"}</strong></p>
             </div>
             <button type="button" onClick={handleLogout} className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50">
               <LogOut className="h-4 w-4" /> Logout
@@ -467,13 +516,21 @@ export default function StudentDashboard() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {filteredJobs.map((job) => (
-                  <JobCard key={job._id} job={job} applied={appliedIds.has(job._id)} onApply={setApplyJob} onView={setViewJob} />
+                  <JobCard 
+                    key={job._id} 
+                    job={job} 
+                    applied={appliedIds.has(job._id)} 
+                    userBranch={userBranch} 
+                    onApply={setApplyJob} 
+                    onView={setViewJob} 
+                  />
                 ))}
               </div>
             )}
           </div>
         )}
 
+        {/* APPLICATIONS TAB VIEW */}
         {activeTab === "applications" && (
           <div>
             <h1 className="mb-6 text-2xl font-bold text-slate-900">My Applications</h1>
@@ -505,7 +562,6 @@ export default function StudentDashboard() {
                       } else if (typeof a.company === 'string') {
                         companyName = a.company;
                       }
-
                       const displayDate = a.appliedDate || (a.createdAt ? new Date(a.createdAt).toLocaleDateString() : "Recent");
 
                       return (
@@ -528,6 +584,7 @@ export default function StudentDashboard() {
           </div>
         )}
 
+        {/* PROFILE TAB VIEW */}
         {activeTab === "profile" && (
           <div className="max-w-xl">
             <h1 className="mb-6 text-2xl font-bold text-slate-900">Profile & Resume</h1>
@@ -539,7 +596,10 @@ export default function StudentDashboard() {
                 <div>
                   <p className="text-lg font-bold text-slate-900">{userName}</p>
                   <p className="text-sm text-slate-500">{userEmail}</p>
-                  <span className="mt-1 inline-block rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Student</span>
+                  <div className="flex gap-1.5 mt-1">
+                    <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Student</span>
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-700">{userBranch || "No Branch Added"}</span>
+                  </div>
                 </div>
               </div>
 
@@ -587,7 +647,13 @@ export default function StudentDashboard() {
         <ApplyModal job={applyJob} onClose={() => setApplyJob(null)} onConfirm={handleApplyConfirm} showToast={showToast} loading={loading} />
       )}
       {viewJob && (
-        <JobDetailModal job={viewJob} applied={appliedIds.has(viewJob._id)} onClose={() => setViewJob(null)} onApply={(job) => { setViewJob(null); setApplyJob(job); }} />
+        <JobDetailModal 
+          job={viewJob} 
+          applied={appliedIds.has(viewJob._id)} 
+          userBranch={userBranch}
+          onClose={() => setViewJob(null)} 
+          onApply={(job) => { setViewJob(null); setApplyJob(job); }} 
+        />
       )}
 
       {/* Toast Notification */}

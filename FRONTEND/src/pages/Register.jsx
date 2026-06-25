@@ -194,21 +194,38 @@ export default function Register() {
                 />
               </div>
             </div>
-
-            {/* Branch */}
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-700">Branch<span className="text-red-500">*</span></label>
-              <div className="relative">
-                <BookOpen className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="text"
-                  value={form.branch}
-                  onChange={(e) => update("branch", e.target.value)}
-                  placeholder="Computer Science"
-                  className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
-                />
-              </div>
-            </div>
+  <label className="mb-1.5 block text-sm font-medium text-slate-700">
+    Branch<span className="text-red-500">*</span>
+  </label>
+  <div className="relative">
+    <select
+      value={form.branch}
+      onChange={(e) => update("branch", e.target.value)}
+      className="w-full appearance-none rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-10 text-sm text-slate-900 outline-none transition focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+    >
+      <option value="" disabled hidden>Select Branch</option>
+      <option value="CSE">CSE</option>
+      <option value="IT">IT</option>
+      <option value="CSE-AIML">CSE-AIML</option>
+      <option value="CSE-DS">CSE-DS</option>
+      <option value="ECE">ECE</option>
+      <option value="EE">EE</option>
+      <option value="ME">ME</option>
+      <option value="CE">CE</option>
+    </select>
+
+    {/* Left Icon */}
+    <BookOpen className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+
+    {/* Custom Dropdown Chevron Arrow on the Right */}
+    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+</div>
 
             {/* CGPA */}
             <div>

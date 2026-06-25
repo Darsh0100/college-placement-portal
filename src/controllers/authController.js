@@ -11,7 +11,7 @@ const registerUser = async (req, res) => {
     const { name, email, password, role, branch, cgpa, resumeUrl, skills } = req.body;
 
     // 1. Validation
-    if (!name || !email || !password || !branch || !cgpa || !resumeUrl) {
+    if (!name || !email || !password || !branch || !cgpa ) {
       return res.status(400).json({
         success: false,
         message: "Please fill in all required fields.",

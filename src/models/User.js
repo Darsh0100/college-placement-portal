@@ -34,7 +34,8 @@ const userSchema = new mongoose.Schema(
 
     branch: {
       type: String,
-      trim: true,
+      enum: ["CSE", "IT","CSE-AIML","CSE-DS", "ECE", "EE", "ME", "CE"], // Enforces data integrity
+      required: true
     },
 
     cgpa: {

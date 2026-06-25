@@ -125,7 +125,9 @@ export default function RecruiterDashboard() {
         skills: jobForm.skills.split(",").map(s => s.trim()).filter(Boolean),
         eligibility: {
           minCGPA: Number(jobForm.minCGPA),
-          allowedBranches: jobForm.allowedBranches.split(",").map(b => b.trim()).filter(Boolean),
+          allowedBranches: Array.isArray(jobForm.allowedBranches)
+  ? jobForm.allowedBranches
+  : jobForm.allowedBranches.split(",").map(b => b.trim()).filter(Boolean),
           maxBacklogs: Number(jobForm.maxBacklogs)
         }
       };
@@ -211,6 +213,7 @@ export default function RecruiterDashboard() {
     localStorage.clear();
     navigate("/");
   };
+  const AVAILABLE_BRANCHES = ["CSE", "IT","CSE-AIML","CSE-DS", "ECE", "EE", "ME", "CE"];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans relative">
@@ -349,9 +352,39 @@ export default function RecruiterDashboard() {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Allowed Branches (Comma separated)</label>
-                <input type="text" autoComplete="off" data-lpignore="true" placeholder="CSE, IT, ECE" className="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-900 mt-1" value={jobForm.allowedBranches} onChange={e => setJobForm({...jobForm, allowedBranches: e.target.value})} />
-              </div>
+  <label className="text-xs font-bold text-slate-600 uppercase tracking-wider block mb-2">
+    Allowed Branches *
+  </label>
+  <div className="flex flex-wrap gap-3">
+    {AVAILABLE_BRANCHES.map(branch => {
+      const isChecked = jobForm.allowedBranches.includes(branch);
+      return (
+        <label 
+          key={branch} 
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-semibold cursor-pointer transition ${
+            isChecked ? "border-blue-900 bg-blue-50 text-blue-900" : "border-slate-200 text-slate-500 hover:bg-slate-50"
+          }`}
+        >
+          <input
+            type="checkbox"
+            className="hidden"
+            checked={isChecked}
+            onChange={() => {
+              let updatedBranches = [...jobForm.allowedBranches];
+              if (isChecked) {
+                updatedBranches = updatedBranches.filter(b => b !== branch);
+              } else {
+                updatedBranches.push(branch);
+              }
+              setJobForm({ ...jobForm, allowedBranches: updatedBranches });
+            }}
+          />
+          {branch}
+        </label>
+      );
+    })}
+  </div>
+</div>
 
               <div>
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Skills Requirements (Comma separated) *</label>

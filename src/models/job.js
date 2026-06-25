@@ -53,11 +53,10 @@ const jobSchema = new mongoose.Schema(
         default: 0,
       },
 
-      allowedBranches: [
-        {
-          type: String,
-        },
-      ],
+      allowedBranches: [{ 
+        type: String, 
+        enum: ["CSE", "IT","CSE-AIML","CSE-DS", "ECE", "EE", "ME", "CE"] 
+      }],
 
       maxBacklogs: {
         type: Number,

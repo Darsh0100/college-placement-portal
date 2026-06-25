@@ -12,6 +12,14 @@ const applyToJob = async (req, res) => {
 
     const studentId = req.user.id; // Extracted from auth middleware token
     const { jobId, coverLetter } = req.body; 
+    const job = await Job.findById(jobId);
+    if (!job.eligibility.allowedBranches.includes(student.branch)) {
+      return res.status(403).json({ 
+        success: false, 
+        message: `Your branch (${student.branch}) is not eligible to apply for this position.` 
+      });
+    }
+    
 
     if (!jobId) {
       return res.status(400).json({
@@ -68,7 +76,6 @@ const uploadedResume = await streamUpload(req);
 const liveResumeUrl = uploadedResume.secure_url;
 
     // 5. Verify the target Job exists
-    const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({
         success: false,
