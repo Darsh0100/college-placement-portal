@@ -43,19 +43,30 @@ const registerUser = async (req, res) => {
     });
 
     // 5. Generate Auth JWT Token
-    const token = jwt.sign(
-      { id: newUser._id, email: newUser.email, role: newUser.role },
-      process.env.JWT_SECRET || "YOUR_FALLBACK_SECRET_IF_NOT_IN_ENV",
-      { expiresIn: "24h" }
-    );
+// 5. Generate Auth JWT Token
+const token = jwt.sign(
+  { 
+    id: newUser._id, 
+    email: newUser.email, 
+    role: newUser.role,
+    branch: newUser.branch // 🌟 ADDED
+  },
+  process.env.JWT_SECRET || "YOUR_FALLBACK_SECRET_IF_NOT_IN_ENV",
+  { expiresIn: "24h" }
+);
 
-    // 🌟 CRITICAL: You MUST explicitly return this JSON response to unlock the frontend fetch!
-    return res.status(201).json({
-      success: true,
-      message: "Student registered successfully!",
-      token,
-      user: { name: newUser.name, email: newUser.email, role: newUser.role },
-    });
+// 🌟 CRITICAL: Explicitly return the branch to the frontend
+return res.status(201).json({
+  success: true,
+  message: "Student registered successfully!",
+  token,
+  user: { 
+    name: newUser.name, 
+    email: newUser.email, 
+    role: newUser.role,
+    branch: newUser.branch // 🌟 ADDED
+  },
+});
   } catch (error) {
     // If your code throws a database validation or configuration error, it ends up here
     console.error("CRITICAL REGISTRATION ERROR:", error);
@@ -101,10 +112,21 @@ const loginUser = async (req, res) => {
       id: checkUser._id,
       email: checkUser.email,
       role: checkUser.role,
+      branch: checkUser.branch // 🌟 ADDED
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "24h",
+    });
+
+    checkUser = checkUser.toObject();
+    checkUser.password = undefined; // Branch stays intact here because it's part of checkUser
+
+    return res.status(200).json({
+      success: true,
+      message: `User logged in successfully as ${checkUser.role}`,
+      token,
+      user: checkUser, // Send whole object (including branch)
     });
 
     checkUser = checkUser.toObject();
