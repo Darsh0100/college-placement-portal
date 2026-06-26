@@ -114,6 +114,7 @@ export default function RecruiterDashboard() {
   const handlePostJob = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const payload = {
         title: jobForm.title,
         description: jobForm.description,
@@ -159,6 +160,9 @@ export default function RecruiterDashboard() {
     } catch (err) {
       console.error(err);
       showToast("An error occurred while posting the job.", "error");
+    }
+    finally{
+      setLoading(false);
     }
   };
 
@@ -395,8 +399,9 @@ export default function RecruiterDashboard() {
                 <label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Job Description *</label>
                 <textarea required rows={4} className="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-900 mt-1 placeholder:text-slate-300" placeholder="Specify project domains, daily operational requirements, and expectations details..." value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} />
               </div>
-
-              <button type="submit" className="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-blue-800 transition shadow-md mt-2">Post Job</button>
+              {loading ?
+              <button type="submit" className="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-blue-800 transition shadow-md mt-2">Submitting</button> :
+              <button type="submit" className="w-full bg-blue-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-blue-800 transition shadow-md mt-2">Post Job</button>}
             </form>
           </div>
         )}
