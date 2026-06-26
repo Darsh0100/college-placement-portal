@@ -13,10 +13,10 @@ const applyToJob = async (req, res) => {
     const studentId = req.user.id; // Extracted from auth middleware token
     const { jobId, coverLetter } = req.body; 
     const job = await Job.findById(jobId);
-    if (!job.eligibility.allowedBranches.includes(student.branch)) {
+    if (!job.eligibility.allowedBranches.includes(studentId.branch)) {
       return res.status(403).json({ 
         success: false, 
-        message: `Your branch (${student.branch}) is not eligible to apply for this position.` 
+        message: `Your branch (${studentId.branch}) is not eligible to apply for this position.` 
       });
     }
     
