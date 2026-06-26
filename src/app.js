@@ -8,7 +8,7 @@ const cors = require("cors");
 const chatRoutes = require("./routes/chatRoutes");
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174","https://placementdy.netlify.app/"],
+    origin: ["http://localhost:5173", "http://localhost:5174","https://placementdy.netlify.app"],
     credentials: true,
   })
 );
