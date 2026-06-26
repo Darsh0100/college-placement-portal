@@ -40,7 +40,7 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8000/api/v1/chat", {
+      const res = await fetch("https://college-placement-portal-y3bt.onrender.comapi/v1/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
