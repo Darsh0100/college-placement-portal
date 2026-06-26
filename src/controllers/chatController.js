@@ -11,9 +11,12 @@ const chat = async (req, res) => {
       });
     }
 
-    const response = await axios.post("http://127.0.0.1:8001/chat", {
-      question,
-    });
+    const response = await axios.post(
+      `${process.env.FASTAPI_URL}/chat`,
+      {
+        question,
+      }
+    );
 
     return res.status(200).json({
       success: true,

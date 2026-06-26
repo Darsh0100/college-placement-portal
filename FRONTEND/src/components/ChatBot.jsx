@@ -76,13 +76,13 @@ export default function ChatBot() {
     <>
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-[9999] h-16 w-16 rounded-full bg-blue-900 text-white shadow-2xl hover:scale-105 transition"
+        className="fixed bottom-6 right-6 `z-[9999]` h-16 w-16  rounded-full bg-blue-900 text-white shadow-2xl hover:scale-105 transition"
       >
-        {open ? <X size={28} /> : <MessageCircle size={28} />}
+        {open ? <X size={28} className="mx-auto " /> : <MessageCircle className="mx-auto" size={28} />}
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-[9999] w-[400px] h-[620px] bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+        <div className="fixed bottom-24 right-6 `z-[9999]` `w-[400px]` `h-[620px]` bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
           <div className="bg-blue-900 text-white p-4 flex items-center gap-3">
             <div className="h-12 w-12 rounded-full bg-white text-blue-900 flex items-center justify-center">
               <Bot size={26} />

@@ -200,7 +200,7 @@ const deleteJob = async (req, res) => {
     }
 
     await Job.findByIdAndDelete(jobId);
-    await syncWithRAG("DELETE", "http://127.0.0.1:8001/delete-job", {
+    await syncWithRAG("DELETE", process.env.FASTAPI_URL, {
       jobId,
     });
     return res.status(200).json({
