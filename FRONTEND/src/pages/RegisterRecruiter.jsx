@@ -41,7 +41,7 @@ export default function RegisterRecruiter() {
   async function handleSubmit() {
 // Inside your handleSubmit function within RegisterRecruiter.jsx
 setLoading(true);
-const res = await fetch("http://localhost:8000/api/v1/auth/register/recruiter", {
+const res = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/auth/register/recruiter", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

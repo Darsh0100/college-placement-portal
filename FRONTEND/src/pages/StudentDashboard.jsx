@@ -359,7 +359,7 @@ export default function StudentDashboard() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/v1/jobs");
+      const response = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/jobs");
       const data = await response.json();
       if (data.success) setJobs(data.jobs);
     } catch (error) {
@@ -370,7 +370,7 @@ export default function StudentDashboard() {
   const fetchApplications = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/api/v1/applications/my-applications", {
+      const response = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/applications/my-applications", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
@@ -460,7 +460,7 @@ export default function StudentDashboard() {
       }
   
       const response = await fetch(
-        "http://localhost:8000/api/v1/applications/apply",
+        "https://college-placement-portal-y3bt.onrender.com/api/v1/applications/apply",
         {
           method: "POST",
           headers: { Authorization: `Bearer ${token}` },

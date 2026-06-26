@@ -50,7 +50,7 @@ export default function Register() {
     try {
       // NOTE: Adjust the path below to match your backend mount structure exactly 
       // (e.g., http://localhost:8000/api/v1/register if using version prefixes)
-      const res = await fetch("http://localhost:8000/api/v1/auth/register", { 
+      const res = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/auth/register", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, role, cgpa: Number(form.cgpa) }),

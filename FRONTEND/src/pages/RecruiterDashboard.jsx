@@ -77,7 +77,7 @@ export default function RecruiterDashboard() {
   const fetchPostedJobs = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8000/api/v1/jobs/my-jobs", {
+      const res = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/jobs/my-jobs", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -99,7 +99,7 @@ export default function RecruiterDashboard() {
 
   const fetchApplicants = async (jobId) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/applications/job/${jobId}`, {
+      const res = await fetch(`https://college-placement-portal-y3bt.onrender.com/api/v1/applications/job/${jobId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -132,7 +132,7 @@ export default function RecruiterDashboard() {
         }
       };
 
-      const res = await fetch("http://localhost:8000/api/v1/jobs/create", {
+      const res = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/jobs/create", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json", 
@@ -165,7 +165,7 @@ export default function RecruiterDashboard() {
   const handleUpdateCompany = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8000/api/v1/auth/recruiter/company-details", {
+      const res = await fetch("https://college-placement-portal-y3bt.onrender.com/api/v1/auth/recruiter/company-details", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json", 
@@ -188,7 +188,7 @@ export default function RecruiterDashboard() {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/applications/status/${applicationId}`, {
+      const res = await fetch(`https://college-placement-portal-y3bt.onrender.com/api/v1/applications/status/${applicationId}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json", 

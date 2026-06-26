@@ -20,7 +20,7 @@ export default function Login() {
       }
   
       const response = await fetch(
-        "http://localhost:8000/api/v1/auth/login",
+        "https://college-placement-portal-y3bt.onrender.com/api/v1/auth/login",
         {
           method: "POST",
           headers: {
