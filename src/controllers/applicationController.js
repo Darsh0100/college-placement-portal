@@ -10,17 +10,10 @@ const applyToJob = async (req, res) => {
   try {
     console.log("Controller Hit");
 
-    const studentId = req.user.id; // Extracted from auth middleware token
+    const { id: studentId, branch: studentBranch } = req.user; 
     const { jobId, coverLetter } = req.body; 
-    const job = await Job.findById(jobId);
-    if (!job.eligibility.allowedBranches.includes(studentId.branch)) {
-      return res.status(403).json({ 
-        success: false, 
-        message: `Your branch (${studentId.branch}) is not eligible to apply for this position.` 
-      });
-    }
-    
 
+    // 1. First, make sure jobId was actually passed
     if (!jobId) {
       return res.status(400).json({
         success: false,
@@ -28,7 +21,26 @@ const applyToJob = async (req, res) => {
       });
     }
 
-    // 1. Check if the student already applied to this specific job
+    // 2. Fetch the target job from MongoDB
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job position not found",
+      });
+    }
+
+    // 3. NOW check branch eligibility safely
+    if (job.eligibility?.allowedBranches && job.eligibility.allowedBranches.length > 0) {
+      if (!job.eligibility.allowedBranches.includes(studentBranch)) {
+        return res.status(403).json({ 
+          success: false, 
+          message: `Your branch (${studentBranch || "Unspecified"}) is not eligible to apply for this position.` 
+        });
+      }
+    }
+
+    // 4. Check if the student already applied to this specific job
     const existingApplication = await Application.findOne({
       student: studentId,
       job: jobId,
@@ -41,7 +53,7 @@ const applyToJob = async (req, res) => {
       });
     }
 
-    // 2. Validate that a file buffer was sent by Multer
+    // 5. Validate that a file buffer was sent by Multer
     if (!req.file) {
       return res.status(400).json({
           success: false,
@@ -49,62 +61,51 @@ const applyToJob = async (req, res) => {
       });
     }
 
-    // 3. Process the file buffer for Cloudinary ingest
-    const fileBuffer = req.file.buffer.toString("base64");
-    const dataURI = `data:${req.file.mimetype};base64,${fileBuffer}`;
-
-    // 4. Upload file payload directly to Cloudinary
-// Replace steps 3 & 4 with this:
-const streamUpload = (req) => {
-  return new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-          {
-              resource_type: "raw", // 🌟 FORCE "raw" to preserve exact PDF binary formatting
-              folder: "placement_resumes",
-              access_mode: "public"
-          },
-          (error, result) => {
-              if (result) resolve(result);
-              else reject(error);
-          }
-      );
-      stream.end(req.file.buffer); // Pass the raw buffer direct to the stream pipe
-  });
-};
-
-const uploadedResume = await streamUpload(req);
-const liveResumeUrl = uploadedResume.secure_url;
-
-    // 5. Verify the target Job exists
-    if (!job) {
-      return res.status(404).json({
-        success: false,
-        message: "Job position not found",
+    // 6. Upload file payload directly to Cloudinary via streams
+    const streamUpload = (req) => {
+      return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+              {
+                  resource_type: "raw", 
+                  folder: "placement_resumes",
+                  access_mode: "public"
+              },
+              (error, result) => {
+                  if (result) resolve(result);
+                  else reject(error);
+              }
+          );
+          stream.end(req.file.buffer); 
       });
-    }
+    };
 
-// 🌟 Fixed: Chained cleanly during assignment
-const application = await Application.create({
-  student: studentId,
-  job: job._id,
-  company: job.company,
-  resumeUrl: liveResumeUrl, 
-  coverLetter: coverLetter || "",
-}).then(doc => doc.populate("company"));
+    const uploadedResume = await streamUpload(req);
+    const liveResumeUrl = uploadedResume.secure_url;
 
-    // 7. 🌟 SAVE BACK TO USER MODEL: Update the student's root profile schema with the URL too!
+    // 7. Create Application and populate company properties cleanly
+    const application = await Application.create({
+      student: studentId,
+      job: job._id,
+      company: job.company,
+      resumeUrl: liveResumeUrl, 
+      coverLetter: coverLetter || "",
+    });
+    
+    await application.populate("company");
+
+    // 8. Update the student's profile schema with the URL too
     await User.findByIdAndUpdate(studentId, {
       resumeUrl: liveResumeUrl
     });
 
-    // 8. Increment the live applicant counter on the job listing
+    // 9. Increment the live applicant counter on the job listing
     await Job.findByIdAndUpdate(job._id, { $inc: { applicantsCount: 1 } });
 
     return res.status(201).json({
       success: true,
       message: "Application submitted and profile resume updated successfully!",
       application,
-      resumeUrl: liveResumeUrl // Send it back so your frontend state can use it if needed
+      resumeUrl: liveResumeUrl 
     });
 
   } catch (error) {
