@@ -76,7 +76,7 @@ const createJob = async (req, res) => {
       applicationDeadline,
       location,
     });
-    await syncWithRAG("POST", "http://127.0.0.1:8001/add-job", {
+    await syncWithRAG("POST", `${process.env.FASTAPI_URL}/add-job`, {
       jobId: job._id.toString(),
     });
 
@@ -162,7 +162,7 @@ const updateJob = async (req, res) => {
       new: true,
       runValidators: true,
     });
-    await syncWithRAG("PUT", "http://127.0.0.1:8001/update-job", {
+    await syncWithRAG("PUT", `${process.env.FASTAPI_URL}/update-job`, {
       jobId,
     });
 
