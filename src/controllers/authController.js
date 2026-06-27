@@ -129,15 +129,15 @@ const loginUser = async (req, res) => {
       user: checkUser, // Send whole object (including branch)
     });
 
-    checkUser = checkUser.toObject();
-    checkUser.password = undefined;
+    // checkUser = checkUser.toObject();
+    // checkUser.password = undefined;
 
-    return res.status(200).json({
-      success: true,
-      message: `User logged in successfully as ${checkUser.role}`,
-      token,
-      user: checkUser,
-    });
+    // return res.status(200).json({
+    //   success: true,
+    //   message: `User logged in successfully as ${checkUser.role}`,
+    //   token,
+    //   user: checkUser,
+    // });
   } catch (err) {
     return res.status(500).json({
       success: false,
