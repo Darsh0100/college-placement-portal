@@ -40,7 +40,7 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://placement-rag-service-6vus.onrender.com/api/v1/chat", {
+      const res = await fetch("https://placement-rag-service-6vus.onrender.com/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
