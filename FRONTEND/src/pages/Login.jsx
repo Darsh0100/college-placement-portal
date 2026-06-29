@@ -12,26 +12,25 @@ export default function Login() {
   const navigate = useNavigate();
 
   async function handleLogin() {
+    // 1. Validate inputs BEFORE changing loading UI states
+    if (!email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+  
     try {
       setLoading(true); 
-      if (!email || !password) {
-        alert("Please fill all fields");
-        return;
-      }
-  
+      
       const response = await fetch(
         "https://college-placement-portal-y3bt.onrender.com/api/v1/auth/login",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
         }
       );
+  
+      // ... rest of your login logic stays exactly the same ...
   
       const data = await response.json();
   
